@@ -1,6 +1,7 @@
 package com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.handler;
 
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.dto.TokenDto;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.service.JWT.JwtStoreService;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.service.JWT.TokenService;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.dto.UserDto;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.global.common.response.ResponseDto;
@@ -28,6 +29,7 @@ import java.util.Map;
 public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
     private final ObjectMapper objectMapper;
     private final TokenService tokenService;
+    private final JwtStoreService jwtStoreService;
 
     @Value("${jwt.refresh-token}") private String refreshTokenKey;
     @Value("${jwt.refresh-token-valid-second}") private int refreshTokenPeriodInSec;
@@ -45,7 +47,7 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
                         .build());
         String refreshToken = tokenService.createRefreshToken();
 
-        // redis
+        jwtStoreService.setRefreshToken(email, refreshToken, refreshTokenPeriodInSec);
 
         makeResponse(response, accessToken, refreshToken);
     }

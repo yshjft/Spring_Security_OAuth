@@ -28,7 +28,7 @@ public class OAuthAttributes {
 
     public static OAuthAttributes of(String registrationId,
                                      String usernameAttributeName, Map<String, Object> attributes) {
-        // 현재는 구글 만
+        // 현재는 구글만
         return ofGoogle(usernameAttributeName, attributes);
     }
 
