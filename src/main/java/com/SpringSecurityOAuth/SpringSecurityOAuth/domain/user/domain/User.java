@@ -26,6 +26,7 @@ public class User extends BaseEntity {
 
     private String picture;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
 
@@ -47,5 +48,9 @@ public class User extends BaseEntity {
         this.picture = picture;
 
         return this;
+    }
+
+    public String getRole() {
+        return this.role.getRole();
     }
 }

@@ -1,15 +1,16 @@
 Spring:
   datasource:
     url: jdbc:h2:tcp://localhost/~/h2-data/SecurityOAuth
-    driver-class-name: org.h2.Driver
     username: sa
     password:
+    driver-class-name: org.h2.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
-      show_sql: true
-      format_sql: true
+      hibernate:
+        show_sql: true
+        format_sql: true
     open-in-view: false
   mvc:
     throw-exception-if-no-handler-found: true
@@ -17,6 +18,10 @@ Spring:
     resources:
       add-mappings: false
     locale: en
+  profiles:
+    include:
+      - oauth
+      - jwt
 server:
   error:
     include-stacktrace: never

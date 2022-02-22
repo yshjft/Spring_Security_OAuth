@@ -1,4 +1,5 @@
 .gradle
 build/
 .idea
-
+/src/main/resources/application-oauth.yml
+/src/main/resources/application-jwt.yml
