@@ -31,9 +31,10 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
 
         String token = resolveToken(httpServletRequest);
+        boolean ignoreExpired = httpServletRequest.getRequestURI().equals("/api/auth/token/refresh");
         log.info("URI: {}", httpServletRequest.getRequestURI());
 
-        if(hasText(token) && tokenService.validateToken(token, httpServletRequest, false)) {
+        if(hasText(token) && tokenService.validateToken(token, httpServletRequest, ignoreExpired)) {
             Authentication authentication = tokenService.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }

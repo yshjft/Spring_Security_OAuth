@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -92,8 +91,13 @@ public class TokenService implements InitializingBean {
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
-        User principal = new User(email, "", authorities);
-        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+
+        UserDto userDto = UserDto.builder()
+                .email(email)
+                .authorities(authorities)
+                .build();
+
+        return new UsernamePasswordAuthenticationToken(userDto, token, authorities);
     }
 
     private Claims parseClaims(String token) {
@@ -103,4 +107,5 @@ public class TokenService implements InitializingBean {
             return e.getClaims();
         }
     }
+
 }
