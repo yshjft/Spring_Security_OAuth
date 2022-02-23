@@ -1,5 +1,6 @@
 package com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.api;
 
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.exception.ExpiredTokenException;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.exception.UnAuthorizedAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,5 +13,10 @@ public class AuthExceptionController {
     @GetMapping("/unauthorized")
     public void unAuthorizedException() {
         throw new UnAuthorizedAccessException();
+    }
+
+    @GetMapping("/token/expired")
+    public void expiredTokenException() {
+        throw new ExpiredTokenException();
     }
 }

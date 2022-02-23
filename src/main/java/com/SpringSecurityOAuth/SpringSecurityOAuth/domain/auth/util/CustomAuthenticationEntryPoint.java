@@ -15,6 +15,14 @@ import java.io.IOException;
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        response.sendRedirect("/api/auth/exception/unauthorized");
+        String exception = (String)request.getAttribute("exception");
+
+        if(exception.equals("EXPIRED_TOKEN")) {
+            response.sendRedirect("/api/auth/exception/token/expired");
+        }else if(exception.equals("WRONG_TOKEN")) {
+
+        }else{
+            response.sendRedirect("/api/auth/exception/unauthorized");
+        }
     }
 }
