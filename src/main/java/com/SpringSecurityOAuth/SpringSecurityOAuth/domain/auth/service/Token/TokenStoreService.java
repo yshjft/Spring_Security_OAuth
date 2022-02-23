@@ -1,4 +1,4 @@
-package com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.service.JWT;
+package com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.service.Token;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import java.time.Duration;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class JwtStoreService implements InitializingBean {
+public class TokenStoreService implements InitializingBean {
     private final RedisTemplate redisTemplate;
     private final String refreshTokenNameSpace = "SECURITY_JWT_REFRESH_TOKEN:";
     private final String blackListTokenNameSpace = "SECURITY_JWT_BLACK_LIST:";

@@ -1,16 +1,14 @@
-package com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.handler;
+package com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.util;
 
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.dto.TokenDto;
-import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.service.JWT.JwtStoreService;
-import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.service.JWT.TokenService;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.service.Token.TokenStoreService;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.service.Token.TokenService;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.dto.UserDto;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.global.common.response.ResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -29,7 +27,7 @@ import java.util.Map;
 public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
     private final ObjectMapper objectMapper;
     private final TokenService tokenService;
-    private final JwtStoreService jwtStoreService;
+    private final TokenStoreService jwtStoreService;
 
     @Value("${jwt.refresh-token}") private String refreshTokenKey;
     @Value("${jwt.refresh-token-valid-second}") private int refreshTokenPeriodInSec;
