@@ -1,10 +1,9 @@
 package com.SpringSecurityOAuth.SpringSecurityOAuth.global.config;
 
-import antlr.TokenStream;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.service.Token.TokenService;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.service.Token.TokenStoreService;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.util.CustomAuthenticationEntryPoint;
-import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.util.JwtAuthenticationFilter;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.util.JwtFilter;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.util.OAuthSuccessHandler;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.service.OAuth.OAuthService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -40,9 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers(
-                        "/test/**", "/favicon.ico",
-                        "/api/auth/exception/**", "/api/auth/token/refresh").permitAll()
+                .antMatchers("/test/**", "/favicon.ico", "/api/auth/exception/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
@@ -52,6 +48,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .successHandler(oAuthSuccessHandler)
                 .userInfoEndpoint().userService(oAuthService); // 소셜 로그인 성공 시 후속 조치를 진행할 User Service 인터페이스의 구현체를 등록
 
-        http.addFilterBefore(new JwtAuthenticationFilter(tokenService, tokenStoreService), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtFilter(tokenService, tokenStoreService), UsernamePasswordAuthenticationFilter.class);
     }
 }

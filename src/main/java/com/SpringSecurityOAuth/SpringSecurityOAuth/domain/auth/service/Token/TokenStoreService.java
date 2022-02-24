@@ -24,6 +24,10 @@ public class TokenStoreService implements InitializingBean {
     }
 
     // get refreshToken
+    public String getRefreshToken(String email) {
+        String key = refreshTokenNameSpace+email;
+        return valueOperations.get(key);
+    }
 
     // set refreshToken
     public void setRefreshToken(String email, String refreshToken, long duration) {
@@ -34,4 +38,18 @@ public class TokenStoreService implements InitializingBean {
 
     // delete refreshToken
 
+    // set blacklist
+    public void setBlackList(String accessToken, Long expirationInMS) {
+        if(expirationInMS <= 0) return;
+
+        String key = blackListTokenNameSpace+accessToken;
+        Duration expiredDuration = Duration.ofMillis(expirationInMS);
+
+        valueOperations.set(key, "INVALID_ACCESS_TOKEN", expiredDuration);
+    }
+
+    // get blacklist
+    public String getBlackList(String accessToken) {
+        return valueOperations.get(blackListTokenNameSpace+accessToken);
+    }
 }

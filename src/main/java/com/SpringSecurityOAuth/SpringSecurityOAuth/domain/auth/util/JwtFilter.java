@@ -19,9 +19,7 @@ import static org.springframework.util.StringUtils.hasText;
 
 @Slf4j
 @RequiredArgsConstructor
-public class JwtAuthenticationFilter extends GenericFilterBean {
-    public static final String AUTHORIZATION_HEADER = "Authorization";
-
+public class JwtFilter extends GenericFilterBean {
     private final TokenService tokenService;
     private final TokenStoreService tokenStoreService;
 
@@ -29,24 +27,17 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest)request;
 
-
-        String token = resolveToken(httpServletRequest);
+        String token = tokenService.resolveAccessToken(httpServletRequest);
         boolean ignoreExpired = httpServletRequest.getRequestURI().equals("/api/auth/token/refresh");
-        log.info("URI: {}", httpServletRequest.getRequestURI());
 
-        if(hasText(token) && tokenService.validateToken(token, httpServletRequest, ignoreExpired)) {
+        if(hasText(token)
+                && tokenService.validateToken(token, httpServletRequest, ignoreExpired)
+                && tokenStoreService.getBlackList(token) == null
+        ) {
             Authentication authentication = tokenService.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
         chain.doFilter(request, response);
-    }
-
-    private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        if(hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
     }
 }

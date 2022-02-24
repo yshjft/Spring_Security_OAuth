@@ -17,12 +17,12 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         String exception = (String)request.getAttribute("exception");
 
-        if(exception.equals("EXPIRED_TOKEN")) {
+        if (exception == null) {
+            response.sendRedirect("/api/auth/exception/unauthorized");
+        }else if(exception.equals("EXPIRED_TOKEN")) {
             response.sendRedirect("/api/auth/exception/token/expired");
         }else if(exception.equals("WRONG_TOKEN")) {
-
-        }else{
-            response.sendRedirect("/api/auth/exception/unauthorized");
+            response.sendRedirect("/api/auth/exception/token/wrong");
         }
     }
 }

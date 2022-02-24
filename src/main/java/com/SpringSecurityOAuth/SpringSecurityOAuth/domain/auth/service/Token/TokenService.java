@@ -1,19 +1,24 @@
 package com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.service.Token;
 
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.dto.UserDto;
-import com.nimbusds.jwt.JWT;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.exception.InvalidRefreshTokenException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.stereotype.Component;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Arrays;
@@ -21,20 +26,66 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-@Component
+import static org.springframework.util.StringUtils.hasText;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
 public class TokenService implements InitializingBean {
+    public static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String USER_EMAIL_KEY = "USER_EMAIL";
     private static final String AUTHORITIES_KEY = "AUTHORITIES";
+
+    private final TokenStoreService tokenStoreService;
 
     @Value("${jwt.secret}") private String secret;
     @Value("${jwt.token-valid-second}") private long accessTokenPeriodInSec;
     @Value("${jwt.refresh-token-valid-second}") private long refreshTokenPeriodInSec;
+    @Value("${jwt.refresh-token}") private String refreshTokenKey;
     private Key key;
 
     @Override
     public void afterPropertiesSet() throws Exception {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public String refreshAccessToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDto userDto = (UserDto) authentication.getPrincipal();
+
+        String refreshToken = resolveRefreshToken();
+        String savedRefreshToken = tokenStoreService.getRefreshToken(userDto.getEmail());
+
+        if(!hasText(refreshToken) || !hasText(savedRefreshToken) || !refreshToken.equals(savedRefreshToken)) {
+            throw new InvalidRefreshTokenException();
+        }
+
+        return createAccessToken(userDto);
+    }
+
+    private String resolveRefreshToken() {
+        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        Cookie[] cookies = servletRequestAttributes.getRequest().getCookies();
+        String refreshToken = null;
+
+        if(cookies != null) {
+            for(Cookie cookie : cookies) {
+                if(cookie.getName().equals(refreshTokenKey)){
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+        return refreshToken;
+    }
+
+    public String resolveAccessToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        if(hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 
     public String createAccessToken(UserDto userDto){
@@ -108,4 +159,10 @@ public class TokenService implements InitializingBean {
         }
     }
 
+    private Long getExpirationInMS(String accessToken) {
+        Date expiration = parseClaims(accessToken).getExpiration();
+        Long now = new Date().getTime();
+
+        return (expiration.getTime() - now);
+    }
 }
