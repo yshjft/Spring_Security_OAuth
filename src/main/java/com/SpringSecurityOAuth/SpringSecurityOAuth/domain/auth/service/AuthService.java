@@ -17,7 +17,6 @@ public class AuthService {
     private final TokenService tokenService;
     private final TokenStoreService tokenStoreService;
 
-    // need test
     public TokenDto refreshAccessToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDto userDto = (UserDto) authentication.getPrincipal();
@@ -28,7 +27,6 @@ public class AuthService {
         return new TokenDto(refreshedAccessToken);
     }
 
-    // need test
     public void signOut() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDto userDto = (UserDto) authentication.getPrincipal();

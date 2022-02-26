@@ -1,7 +1,10 @@
 package com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.api;
 
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.dto.TestDto;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.dto.UserInfoDto;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.service.UserService;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.global.common.response.ResponseDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,19 +13,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
-    @GetMapping("/greeting")
-    public ResponseEntity<ResponseDto> greetingUser() {
-        TestDto testDto = TestDto.builder()
-                .greeting("Hi!")
-                .build();
+    private final UserService userService;
 
+    @GetMapping("/info")
+    public ResponseEntity<ResponseDto> getUserInfo() {
+        UserInfoDto userInfoDto = userService.getUserInfo();
         ResponseDto responseDto = ResponseDto.builder()
                 .status(HttpStatus.OK.value())
-                .message("greeting success!")
-                .result(testDto)
+                .message("get user info success")
+                .result(userInfoDto)
                 .build();
 
-        return new ResponseEntity(responseDto, HttpStatus.OK);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(responseDto);
     }
 }
