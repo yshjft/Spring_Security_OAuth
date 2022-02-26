@@ -13,7 +13,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -32,11 +31,8 @@ import static org.springframework.util.StringUtils.hasText;
 @Service
 @RequiredArgsConstructor
 public class TokenService implements InitializingBean {
-    public static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String USER_EMAIL_KEY = "USER_EMAIL";
     private static final String AUTHORITIES_KEY = "AUTHORITIES";
-
-    private final TokenStoreService tokenStoreService;
 
     @Value("${jwt.secret}") private String secret;
     @Value("${jwt.token-valid-second}") private long accessTokenPeriodInSec;
@@ -50,12 +46,8 @@ public class TokenService implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String refreshAccessToken() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDto userDto = (UserDto) authentication.getPrincipal();
-
+    public String refreshAccessToken(String savedRefreshToken, UserDto userDto) {
         String refreshToken = resolveRefreshToken();
-        String savedRefreshToken = tokenStoreService.getRefreshToken(userDto.getEmail());
 
         if(!hasText(refreshToken) || !hasText(savedRefreshToken) || !refreshToken.equals(savedRefreshToken)) {
             throw new InvalidRefreshTokenException();
@@ -78,14 +70,6 @@ public class TokenService implements InitializingBean {
             }
         }
         return refreshToken;
-    }
-
-    public String resolveAccessToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        if(hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
     }
 
     public String createAccessToken(UserDto userDto){
@@ -134,8 +118,8 @@ public class TokenService implements InitializingBean {
         return false;
     }
 
-    public Authentication getAuthentication(String token) {
-        Claims claims = parseClaims(token);
+    public Authentication getAuthentication(String accessToken) {
+        Claims claims = parseClaims(accessToken);
 
         String email = (String)claims.get(USER_EMAIL_KEY);
         Collection<? extends  GrantedAuthority> authorities =
@@ -148,7 +132,14 @@ public class TokenService implements InitializingBean {
                 .authorities(authorities)
                 .build();
 
-        return new UsernamePasswordAuthenticationToken(userDto, token, authorities);
+        return new UsernamePasswordAuthenticationToken(userDto, accessToken, authorities);
+    }
+
+    public Long getExpirationInMS(String accessToken) {
+        Date expiration = parseClaims(accessToken).getExpiration();
+        Long now = new Date().getTime();
+
+        return (expiration.getTime() - now);
     }
 
     private Claims parseClaims(String token) {
@@ -157,12 +148,5 @@ public class TokenService implements InitializingBean {
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
-    }
-
-    private Long getExpirationInMS(String accessToken) {
-        Date expiration = parseClaims(accessToken).getExpiration();
-        Long now = new Date().getTime();
-
-        return (expiration.getTime() - now);
     }
 }

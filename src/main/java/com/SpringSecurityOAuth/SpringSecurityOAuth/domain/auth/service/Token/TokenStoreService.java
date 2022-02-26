@@ -37,6 +37,13 @@ public class TokenStoreService implements InitializingBean {
     }
 
     // delete refreshToken
+    public void deleteRefreshToken(String email) {
+        String key = refreshTokenNameSpace+email;
+
+        if(valueOperations.get(key) != null) {
+            redisTemplate.delete(key);
+        }
+    }
 
     // set blacklist
     public void setBlackList(String accessToken, Long expirationInMS) {

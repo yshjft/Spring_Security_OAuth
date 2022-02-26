@@ -9,13 +9,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -29,8 +30,8 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
     private final TokenService tokenService;
     private final TokenStoreService jwtStoreService;
 
-    @Value("${jwt.refresh-token}") private String refreshTokenKey;
     @Value("${jwt.refresh-token-valid-second}") private int refreshTokenPeriodInSec;
+    @Value("${jwt.refresh-token}") private String refreshTokenKey;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -66,10 +67,7 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
 
         // 쿠키
         // 배포시 secure 설정
-        Cookie cookie = new Cookie(refreshTokenKey, refreshToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(refreshTokenPeriodInSec);
-        response.addCookie(cookie);
+        ResponseCookie responseCookie = RefreshTokenResponseCookie.of(refreshTokenKey, refreshToken, true, false, refreshTokenPeriodInSec);
+        response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
     }
 }
