@@ -1,6 +1,5 @@
 package com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.api;
 
-import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.dto.TestDto;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.dto.UserInfoDto;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.service.UserService;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.global.common.response.ResponseDto;
