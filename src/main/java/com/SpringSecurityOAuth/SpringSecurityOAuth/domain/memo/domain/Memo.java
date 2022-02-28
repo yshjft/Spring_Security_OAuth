@@ -1,4 +1,4 @@
-package com.SpringSecurityOAuth.SpringSecurityOAuth.domain.post.domain;
+package com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.domain;
 
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.domain.User;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.global.common.domain.BaseEntity;
@@ -14,7 +14,7 @@ import static javax.persistence.FetchType.LAZY;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Post extends BaseEntity {
+public class Memo extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="post_id")
     private Long id;
@@ -28,10 +28,10 @@ public class Post extends BaseEntity {
     User user;
 
     @Builder
-    public Post(Long id, String memo, User user) {
+    public Memo(Long id, String memo, User user) {
         this.id = id;
         this.memo = memo;
         this.user = user;
-        user.getPosts().add(this);
+        user.getMemos().add(this);
     }
 }

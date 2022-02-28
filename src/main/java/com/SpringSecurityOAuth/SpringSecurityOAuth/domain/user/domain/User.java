@@ -1,6 +1,6 @@
 package com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.domain;
 
-import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.post.domain.Post;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.domain.Memo;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.global.common.domain.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,7 +31,7 @@ public class User extends BaseEntity {
     private Role role;
 
     @OneToMany(mappedBy = "user")
-    List<Post> posts = new ArrayList<>();
+    List<Memo> memos = new ArrayList<>();
 
     // post
     @Builder

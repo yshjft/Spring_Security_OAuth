@@ -1,4 +1,4 @@
-package com.SpringSecurityOAuth.SpringSecurityOAuth.domain.post.dto;
+package com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -9,13 +9,13 @@ import javax.validation.constraints.Size;
 
 @Getter
 @NoArgsConstructor
-public class PostRequestDto {
+public class MemoRequestDto {
     @NotNull
-    @Size(min = 1, max = 10)
+    @Size(min = 1, max = 300)
     private String memo;
 
     @Builder
-    public PostRequestDto(String memo) {
+    public MemoRequestDto(String memo) {
         this.memo = memo;
     }
 }

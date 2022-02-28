@@ -1,8 +1,8 @@
 package com.SpringSecurityOAuth.SpringSecurityOAuth.domain;
 
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.dto.UserDto;
-import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.post.domain.Post;
-import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.post.dto.PostRequestDto;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.domain.Memo;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoRequestDto;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.domain.Role;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.domain.User;
 
@@ -19,11 +19,11 @@ public class TestData {
             .role(Role.USER)
             .build();
 
-    public static PostRequestDto postRequestDto = PostRequestDto.builder()
+    public static MemoRequestDto memoRequestDto = MemoRequestDto.builder()
             .memo("jerry")
             .build();
 
-    public static Post post = Post.builder()
+    public static Memo memo = Memo.builder()
             .id(2L)
             .memo("jerry")
             .user(user)

@@ -1,16 +1,17 @@
 package com.SpringSecurityOAuth.SpringSecurityOAuth.global.error;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ErrorResponse {
     private int status;
     private String code;
@@ -36,5 +37,36 @@ public class ErrorResponse {
     }
 
     // 복수 에러
-    // public static ErrorResponse of(ErrorCode errorCode, Exception e) {}
+    public static ErrorResponse of(ErrorCode errorCode, BindingResult bindingResult) {
+
+        List<FieldError> errors = bindingResult.getFieldErrors()
+                .stream().map(fieldError -> FieldError.builder()
+                        .field(fieldError.getObjectName()+"."+fieldError.getField())
+                        .value(fieldError.getRejectedValue())
+                        .reason(fieldError.getDefaultMessage())
+                        .build())
+                .collect(Collectors.toList());
+
+        return ErrorResponse.builder()
+                .status(errorCode.getStatus())
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .errors(errors)
+                .build();
+    }
+
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class FieldError {
+        private String field;
+        private Object value;
+        private String reason;
+
+        @Builder
+        public FieldError(String field, Object value, String reason) {
+            this.field = field;
+            this.value = value;
+            this.reason = reason;
+        }
+    }
 }
