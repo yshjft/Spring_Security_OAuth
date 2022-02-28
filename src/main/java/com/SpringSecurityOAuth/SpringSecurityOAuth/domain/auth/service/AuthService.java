@@ -19,17 +19,17 @@ public class AuthService {
 
     public TokenDto refreshAccessToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDto userDto = (UserDto) authentication.getPrincipal();
+        UserDto principal = (UserDto) authentication.getPrincipal();
 
-        String savedRefreshToken = tokenStoreService.getRefreshToken(userDto.getEmail());
-        String refreshedAccessToken = tokenService.refreshAccessToken(savedRefreshToken, userDto);
+        String savedRefreshToken = tokenStoreService.getRefreshToken(principal.getEmail());
+        String refreshedAccessToken = tokenService.refreshAccessToken(savedRefreshToken, principal);
 
         return new TokenDto(refreshedAccessToken);
     }
 
     public void signOut() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDto userDto = (UserDto) authentication.getPrincipal();
+        UserDto principal = (UserDto) authentication.getPrincipal();
 
         // access token black list
         String accessToken = (String)authentication.getCredentials();
@@ -37,6 +37,6 @@ public class AuthService {
         tokenStoreService.setBlackList(accessToken, expirationInMS);
 
         // refresh token 제거
-        tokenStoreService.deleteRefreshToken(userDto.getEmail());
+        tokenStoreService.deleteRefreshToken(principal.getEmail());
     }
 }

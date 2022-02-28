@@ -5,10 +5,10 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class MemoResponseDto {
+public class MemoIdDto {
     private Long id;
 
-    public MemoResponseDto(Long id) {
+    public MemoIdDto(Long id) {
         this.id = id;
     }
 }

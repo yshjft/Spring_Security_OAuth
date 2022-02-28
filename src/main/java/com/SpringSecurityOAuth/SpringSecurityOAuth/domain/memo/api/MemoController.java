@@ -1,7 +1,7 @@
 package com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.api;
 
-import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoRequestDto;
-import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoResponseDto;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoWriteDto;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoIdDto;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.service.MemoService;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.global.common.response.ResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +18,8 @@ public class MemoController {
 
     // 생성
     @PostMapping
-    public ResponseEntity<ResponseDto> writeMemo(@Validated @RequestBody MemoRequestDto memoRequestDto) {
-        MemoResponseDto memoResponseDto = memoService.writeMemo(memoRequestDto);
+    public ResponseEntity<ResponseDto> writeMemo(@Validated @RequestBody MemoWriteDto memoWriteDto) {
+        MemoIdDto memoResponseDto = memoService.writeMemo(memoWriteDto);
         ResponseDto responseDto = ResponseDto.builder()
                 .status(HttpStatus.CREATED.value())
                 .message("write memo successfully")

@@ -2,7 +2,7 @@ package com.SpringSecurityOAuth.SpringSecurityOAuth.domain;
 
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.dto.UserDto;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.domain.Memo;
-import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoRequestDto;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoWriteDto;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.domain.Role;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.domain.User;
 
@@ -19,7 +19,7 @@ public class TestData {
             .role(Role.USER)
             .build();
 
-    public static MemoRequestDto memoRequestDto = MemoRequestDto.builder()
+    public static MemoWriteDto memoWriteDto = MemoWriteDto.builder()
             .memo("jerry")
             .build();
 
@@ -28,5 +28,4 @@ public class TestData {
             .memo("jerry")
             .user(user)
             .build();
-
 }

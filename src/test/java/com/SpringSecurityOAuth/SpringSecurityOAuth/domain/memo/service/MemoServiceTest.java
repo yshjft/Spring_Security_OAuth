@@ -1,7 +1,8 @@
 package com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.service;
 
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dao.MemoRepository;
-import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoResponseDto;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.domain.Memo;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoIdDto;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,10 +10,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.SpringSecurityOAuth.SpringSecurityOAuth.domain.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,13 +51,34 @@ class MemoServiceTest {
         when(memoRepository.save(any())).thenReturn(memo);
 
         // when
-        MemoResponseDto memoResponseDto = memoService.writeMemo(memoRequestDto);
+        MemoIdDto memoResponseDto = memoService.writeMemo(memoWriteDto);
 
         // then
         verify(userService).getUserByEmail("test@test.com");
         verify(memoRepository).save(any());
 
         assertThat(memoResponseDto).isNotNull();
+    }
+
+    @Test
+    public void 메모_조회() {
+        // given
+        List<Memo> memos = new ArrayList<>();
+        memos.add(memo);
+        Page<Memo> memoPagingResult = new PageImpl<>(memos);
+
+        int page = 0, perPage = 3;
+        Pageable pageable = PageRequest.of(page, perPage);
+
+        when(userService.getUserByEmail(userDto.getEmail())).thenReturn(user);
+        when(memoRepository.findByUser(user, pageable)).thenReturn(memoPagingResult);
+
+        // when
+        memoService.getMemos(page, perPage);
+
+        // then
+        verify(userService).getUserByEmail(userDto.getEmail());
+        verify(memoRepository).findByUser(user, pageable);
     }
 
 

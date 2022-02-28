@@ -9,13 +9,13 @@ import javax.validation.constraints.Size;
 
 @Getter
 @NoArgsConstructor
-public class MemoRequestDto {
+public class MemoWriteDto {
     @NotNull
     @Size(min = 1, max = 300)
     private String memo;
 
     @Builder
-    public MemoRequestDto(String memo) {
+    public MemoWriteDto(String memo) {
         this.memo = memo;
     }
 }
