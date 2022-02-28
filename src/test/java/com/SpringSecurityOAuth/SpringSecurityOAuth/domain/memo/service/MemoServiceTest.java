@@ -2,7 +2,9 @@ package com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.service;
 
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dao.MemoRepository;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.domain.Memo;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoDto;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoIdDto;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.exception.MemoNotFoundException;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,8 +21,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.SpringSecurityOAuth.SpringSecurityOAuth.domain.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -82,4 +86,35 @@ class MemoServiceTest {
     }
 
 
+    @Test
+    public void 메모_단건_조회() {
+        // given
+        when(userService.getUserByEmail(userDto.getEmail())).thenReturn(user);
+        when(memoRepository.findByIdAndUserId(memo.getId(), user.getId())).thenReturn(Optional.of(memo));
+
+        // when
+        MemoDto memoDto = memoService.getMemo(memo.getId());
+
+        // then
+        verify(userService).getUserByEmail(userDto.getEmail());
+        verify(memoRepository).findByIdAndUserId(memo.getId(), user.getId());
+
+        assertThat(memoDto.getId()).isEqualTo(memo.getId());
+    }
+
+    @Test
+    public void 메모_단건_조회_실패() {
+        // given
+        when(userService.getUserByEmail(userDto.getEmail())).thenReturn(user);
+        when(memoRepository.findByIdAndUserId(memo.getId(), user.getId())).thenThrow(new MemoNotFoundException());
+
+        try {
+            memoService.getMemo(memo.getId());
+        }catch(Exception e) {
+            assertThat(e instanceof MemoNotFoundException).isTrue();
+        }finally {
+            verify(userService).getUserByEmail(userDto.getEmail());
+            verify(memoRepository).findByIdAndUserId(memo.getId(), user.getId());
+        }
+    }
 }

@@ -6,6 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface MemoRepository extends JpaRepository<Memo, Long> {
     Page<Memo> findByUser(User user, Pageable pageable);
+
+    Optional<Memo> findByIdAndUserId(Long id, Long userId);
 }

@@ -7,6 +7,7 @@ import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoDto;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoWriteDto;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoIdDto;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemosDto;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.exception.MemoNotFoundException;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.domain.User;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.service.UserService;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.global.common.response.MetaDataDto;
@@ -76,6 +77,25 @@ public class MemoService {
         return MemosDto.builder()
                 .metaData(metaData)
                 .memos(memos)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public MemoDto getMemo(Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDto principal = (UserDto)authentication.getPrincipal();
+
+        String email = principal.getEmail();
+        User user = userService.getUserByEmail(email);
+
+        // id & user id
+        Memo memo = memoRepository.findByIdAndUserId(id, user.getId()).orElseThrow(()->new MemoNotFoundException());
+
+        return MemoDto.builder()
+                .id(memo.getId())
+                .memo(memo.getMemo())
+                .createdAt(memo.getCreatedAt())
+                .updatedAt(memo.getUpdatedAt())
                 .build();
     }
 }
