@@ -44,7 +44,7 @@ class MemoServiceTest {
     @BeforeEach
     void init() {
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDto, "");
-        when(securityContext.getAuthentication()).thenReturn(authentication);
+        lenient().when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
     }
 
@@ -109,6 +109,7 @@ class MemoServiceTest {
         when(memoRepository.findByIdAndUserId(memo.getId(), user.getId())).thenThrow(new MemoNotFoundException());
 
         try {
+            // when
             memoService.getMemo(memo.getId());
         }catch(Exception e) {
             assertThat(e instanceof MemoNotFoundException).isTrue();
@@ -116,5 +117,18 @@ class MemoServiceTest {
             verify(userService).getUserByEmail(userDto.getEmail());
             verify(memoRepository).findByIdAndUserId(memo.getId(), user.getId());
         }
+    }
+
+    @Test
+    public void 메모_수정() {
+        // given
+        when(memoRepository.findById(memo.getId())).thenReturn(Optional.of(memo));
+
+        // when
+        memoService.updateMemo(memo.getId(), memoUpdateDto);
+
+        // then
+        verify(memoRepository).findById(memo.getId());
+
     }
 }

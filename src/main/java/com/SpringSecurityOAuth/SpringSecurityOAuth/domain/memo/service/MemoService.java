@@ -81,7 +81,7 @@ public class MemoService {
     }
 
     @Transactional(readOnly = true)
-    public MemoDto getMemo(Long id) {
+    public MemoDto getMemo(Long memoId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDto principal = (UserDto)authentication.getPrincipal();
 
@@ -89,7 +89,7 @@ public class MemoService {
         User user = userService.getUserByEmail(email);
 
         // id & user id
-        Memo memo = memoRepository.findByIdAndUserId(id, user.getId()).orElseThrow(()->new MemoNotFoundException());
+        Memo memo = memoRepository.findByIdAndUserId(memoId, user.getId()).orElseThrow(()->new MemoNotFoundException());
 
         return MemoDto.builder()
                 .id(memo.getId())
@@ -97,5 +97,14 @@ public class MemoService {
                 .createdAt(memo.getCreatedAt())
                 .updatedAt(memo.getUpdatedAt())
                 .build();
+    }
+
+    @Transactional
+    public MemoIdDto updateMemo(Long memoId, MemoWriteDto memoUpdateDto) {
+        Memo memo = memoRepository.findById(memoId).orElseThrow(()->new MemoNotFoundException());
+
+        Memo updatedMemo = memo.updateMemo(memoUpdateDto.getMemo());
+
+        return new MemoIdDto(updatedMemo.getId());
     }
 }

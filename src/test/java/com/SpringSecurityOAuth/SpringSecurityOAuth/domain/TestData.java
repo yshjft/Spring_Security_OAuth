@@ -23,6 +23,10 @@ public class TestData {
             .memo("jerry")
             .build();
 
+    public static MemoWriteDto memoUpdateDto = MemoWriteDto.builder()
+            .memo("jerry2222")
+            .build();
+
     public static Memo memo = Memo.builder()
             .id(2L)
             .memo("jerry")

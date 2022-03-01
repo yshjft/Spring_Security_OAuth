@@ -1,6 +1,5 @@
 package com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.api;
 
-import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.domain.Memo;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoDto;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoWriteDto;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoIdDto;
@@ -53,13 +52,13 @@ public class MemoController {
     }
 
     // 단건 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseDto> getMemo(@PathVariable Long id) {
-        MemoDto memoDto= memoService.getMemo(id);
+    @GetMapping("/{memoId}")
+    public ResponseEntity<ResponseDto> getMemo(@PathVariable Long memoId) {
+        MemoDto memoDto= memoService.getMemo(memoId);
 
         ResponseDto responseDto = ResponseDto.builder()
                 .status(HttpStatus.OK.value())
-                .message("get memo(id:"+id+") successfully.")
+                .message("get memo(id:"+memoId+") successfully.")
                 .result(memoDto)
                 .build();
 
@@ -69,6 +68,20 @@ public class MemoController {
     }
 
     // 수정
+    @PutMapping("/{memoId}")
+    public ResponseEntity<ResponseDto> updateMemo(@PathVariable Long memoId, @Validated @RequestBody MemoWriteDto memoUpdateDto) {
+        MemoIdDto memoIdDto = memoService.updateMemo(memoId, memoUpdateDto);
+
+        ResponseDto responseDto = ResponseDto.builder()
+                .status(HttpStatus.OK.value())
+                .message("update memo(id:"+memoId+") successfully.")
+                .result(memoIdDto)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(responseDto);
+    }
 
     // 삭제
 }
