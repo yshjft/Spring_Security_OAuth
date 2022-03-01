@@ -30,9 +30,9 @@ public class AuthService {
     public void signOut() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDto principal = (UserDto) authentication.getPrincipal();
-
-        // access token black list
         String accessToken = (String)authentication.getCredentials();
+
+        // blackList
         Long expirationInMS = tokenService.getExpirationInMS(accessToken);
         tokenStoreService.setBlackList(accessToken, expirationInMS);
 

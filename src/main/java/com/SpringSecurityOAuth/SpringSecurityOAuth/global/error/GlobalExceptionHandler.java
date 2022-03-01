@@ -4,6 +4,7 @@ import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.exception.Expired
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.exception.InvalidRefreshTokenException;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.exception.UnAuthorizedAccessException;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.auth.exception.WrongTokenException;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.exception.MemoAccessDeniedException;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.exception.MemoNotFoundException;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +54,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handlerInvalidRefreshTokenException(InvalidRefreshTokenException e) {
         final ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_REFRESH_TOKEN);
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(MemoAccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handlerMemoAccessDeniedException(MemoAccessDeniedException e) {
+        final ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.ACCESS_DENIED);
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(UserNotFoundException.class)

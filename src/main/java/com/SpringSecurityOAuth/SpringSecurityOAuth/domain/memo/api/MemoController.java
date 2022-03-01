@@ -83,5 +83,9 @@ public class MemoController {
                 .body(responseDto);
     }
 
-    // 삭제
+    // 단건 삭제
+
+
+    // bulk 삭제
+
 }

@@ -7,6 +7,7 @@ import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoDto;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoWriteDto;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoIdDto;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemosDto;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.exception.MemoAccessDeniedException;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.exception.MemoNotFoundException;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.domain.User;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.service.UserService;
@@ -30,10 +31,7 @@ public class MemoService {
 
     @Transactional
     public MemoIdDto writeMemo(MemoWriteDto memoWriteDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDto principal = (UserDto)authentication.getPrincipal();
-
-        String email = principal.getEmail();
+        String email = getPrincipalEmail();
         User user = userService.getUserByEmail(email);
 
         Memo memo = Memo.builder()
@@ -48,10 +46,7 @@ public class MemoService {
 
     @Transactional(readOnly = true)
     public MemosDto getMemos(int page, int perPage) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDto principal = (UserDto)authentication.getPrincipal();
-
-        String email = principal.getEmail();
+        String email = getPrincipalEmail();
         User user = userService.getUserByEmail(email);
 
         Page<Memo> memoPagingResult = memoRepository.findByUser(user, PageRequest.of(page, perPage));
@@ -82,14 +77,10 @@ public class MemoService {
 
     @Transactional(readOnly = true)
     public MemoDto getMemo(Long memoId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDto principal = (UserDto)authentication.getPrincipal();
+        String email = getPrincipalEmail();
 
-        String email = principal.getEmail();
-        User user = userService.getUserByEmail(email);
-
-        // id & user id
-        Memo memo = memoRepository.findByIdAndUserId(memoId, user.getId()).orElseThrow(()->new MemoNotFoundException());
+        Memo memo = memoRepository.findByIdWithUser(memoId).orElseThrow(()->new MemoNotFoundException());
+        if(!memo.getUser().getEmail().equals(email)) throw new MemoAccessDeniedException();
 
         return MemoDto.builder()
                 .id(memo.getId())
@@ -101,10 +92,20 @@ public class MemoService {
 
     @Transactional
     public MemoIdDto updateMemo(Long memoId, MemoWriteDto memoUpdateDto) {
-        Memo memo = memoRepository.findById(memoId).orElseThrow(()->new MemoNotFoundException());
+        String email = getPrincipalEmail();
+
+        Memo memo = memoRepository.findByIdWithUser(memoId).orElseThrow(()->new MemoNotFoundException());
+        if(!memo.getUser().getEmail().equals(email)) throw new MemoAccessDeniedException();
 
         Memo updatedMemo = memo.updateMemo(memoUpdateDto.getMemo());
 
         return new MemoIdDto(updatedMemo.getId());
+    }
+
+
+    private String getPrincipalEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDto principal = (UserDto)authentication.getPrincipal();
+        return principal.getEmail();
     }
 }

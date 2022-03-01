@@ -4,6 +4,7 @@ import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dao.MemoRepositor
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.domain.Memo;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoDto;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.dto.MemoIdDto;
+import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.exception.MemoAccessDeniedException;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.memo.exception.MemoNotFoundException;
 import com.SpringSecurityOAuth.SpringSecurityOAuth.domain.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +45,7 @@ class MemoServiceTest {
     @BeforeEach
     void init() {
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDto, "");
-        lenient().when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
     }
 
@@ -89,15 +90,13 @@ class MemoServiceTest {
     @Test
     public void 메모_단건_조회() {
         // given
-        when(userService.getUserByEmail(userDto.getEmail())).thenReturn(user);
-        when(memoRepository.findByIdAndUserId(memo.getId(), user.getId())).thenReturn(Optional.of(memo));
+        when(memoRepository.findByIdWithUser(memo.getId())).thenReturn(Optional.of(memo));
 
         // when
         MemoDto memoDto = memoService.getMemo(memo.getId());
 
         // then
-        verify(userService).getUserByEmail(userDto.getEmail());
-        verify(memoRepository).findByIdAndUserId(memo.getId(), user.getId());
+        verify(memoRepository).findByIdWithUser(memo.getId());
 
         assertThat(memoDto.getId()).isEqualTo(memo.getId());
     }
@@ -105,8 +104,7 @@ class MemoServiceTest {
     @Test
     public void 메모_단건_조회_실패() {
         // given
-        when(userService.getUserByEmail(userDto.getEmail())).thenReturn(user);
-        when(memoRepository.findByIdAndUserId(memo.getId(), user.getId())).thenThrow(new MemoNotFoundException());
+        when(memoRepository.findByIdWithUser(memo.getId())).thenThrow(new MemoNotFoundException());
 
         try {
             // when
@@ -114,21 +112,46 @@ class MemoServiceTest {
         }catch(Exception e) {
             assertThat(e instanceof MemoNotFoundException).isTrue();
         }finally {
-            verify(userService).getUserByEmail(userDto.getEmail());
-            verify(memoRepository).findByIdAndUserId(memo.getId(), user.getId());
+            verify(memoRepository).findByIdWithUser(memo.getId());
+        }
+    }
+
+    @Test
+    public void 메모_단건_조회_실패_접근_거부() {
+        // given
+        when(memoRepository.findByIdWithUser(memo2.getId())).thenReturn(Optional.of(memo2));
+
+        try {
+            // when
+            memoService.getMemo(memo2.getId());
+        }catch(Exception e) {
+            assertThat(e instanceof MemoAccessDeniedException).isTrue();
+        }finally {
+            verify(memoRepository).findByIdWithUser(memo2.getId());
         }
     }
 
     @Test
     public void 메모_수정() {
         // given
-        when(memoRepository.findById(memo.getId())).thenReturn(Optional.of(memo));
+        when(memoRepository.findByIdWithUser(memo.getId())).thenReturn(Optional.of(memo));
 
         // when
         memoService.updateMemo(memo.getId(), memoUpdateDto);
 
         // then
-        verify(memoRepository).findById(memo.getId());
+        verify(memoRepository).findByIdWithUser(memo.getId());
+    }
 
+    @Test
+    public void 메모_수정_실패() {
+        // given
+        when(memoRepository.findByIdWithUser(memo2.getId())).thenReturn(Optional.of(memo2));
+
+        try{
+            memoService.updateMemo(memo2.getId(), memoUpdateDto);
+        }catch (Exception e) {
+            assertThat(e instanceof MemoAccessDeniedException).isTrue();
+        }
     }
 }

@@ -19,6 +19,14 @@ public class TestData {
             .role(Role.USER)
             .build();
 
+    public static User user2 = User.builder()
+            .id(3L)
+            .name("tester2")
+            .email("tes2t@test.com")
+            .picture("image_url2")
+            .role(Role.USER)
+            .build();
+
     public static MemoWriteDto memoWriteDto = MemoWriteDto.builder()
             .memo("jerry")
             .build();
@@ -31,5 +39,11 @@ public class TestData {
             .id(2L)
             .memo("jerry")
             .user(user)
+            .build();
+
+    public static Memo memo2 = Memo.builder()
+            .id(3L)
+            .memo("test test test")
+            .user(user2)
             .build();
 }
