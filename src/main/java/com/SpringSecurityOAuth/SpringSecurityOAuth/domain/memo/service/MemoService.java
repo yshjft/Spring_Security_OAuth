@@ -102,6 +102,17 @@ public class MemoService {
         return new MemoIdDto(updatedMemo.getId());
     }
 
+    @Transactional
+    public MemoIdDto deleteMemo(Long memoId) {
+        String email = getPrincipalEmail();
+
+        Memo memo = memoRepository.findByIdWithUser(memoId).orElseThrow(()->new MemoNotFoundException());
+        if(!memo.getUser().getEmail().equals(email)) throw new MemoAccessDeniedException();
+
+        memoRepository.delete(memo);
+
+        return new MemoIdDto(memoId);
+    }
 
     private String getPrincipalEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

@@ -83,9 +83,21 @@ public class MemoController {
                 .body(responseDto);
     }
 
-    // 단건 삭제
+    // 삭제
+    @DeleteMapping("/{memoId}")
+    public ResponseEntity<ResponseDto> deleteMemo(@PathVariable Long memoId) {
+        MemoIdDto memoIdDto = memoService.deleteMemo(memoId);
 
+        ResponseDto responseDto = ResponseDto.builder()
+                .status(HttpStatus.OK.value())
+                .message("delete memo(id:"+memoId+") successfully.")
+                .result(memoIdDto)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(responseDto);
+    }
 
     // bulk 삭제
-
 }

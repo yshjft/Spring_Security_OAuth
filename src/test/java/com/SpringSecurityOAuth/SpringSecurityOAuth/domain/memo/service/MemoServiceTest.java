@@ -154,4 +154,29 @@ class MemoServiceTest {
             assertThat(e instanceof MemoAccessDeniedException).isTrue();
         }
     }
+
+    @Test
+    public void 메모_삭제() {
+        // given
+        when(memoRepository.findByIdWithUser(memo.getId())).thenReturn(Optional.of(memo));
+
+        // when
+        memoService.deleteMemo(memo.getId());
+
+        // then
+        verify(memoRepository).delete(memo);
+    }
+
+    @Test
+    public void 메모_삭제_실패_접근_거부() {
+        // given
+        when(memoRepository.findByIdWithUser(memo2.getId())).thenReturn(Optional.of(memo2));
+
+        try {
+            memoService.deleteMemo(memo2.getId());
+        }catch (Exception e) {
+            verify(memoRepository, never()).delete(memo);
+            assertThat(e instanceof MemoAccessDeniedException);
+        }
+    }
 }
