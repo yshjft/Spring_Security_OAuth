@@ -98,6 +98,4 @@ public class MemoController {
                 .status(HttpStatus.OK)
                 .body(responseDto);
     }
-
-    // bulk 삭제
 }
