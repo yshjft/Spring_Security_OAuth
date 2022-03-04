@@ -38,7 +38,8 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         OAuth2User oAuth2User = (OAuth2User)authentication.getPrincipal();
         Map<String, Object> attributes = oAuth2User.getAttributes();
-        String email = (String)attributes.get("email");
+
+        String email = (String)attributes.get("email"); // 문제...
 
         String accessToken = tokenService.createAccessToken(
                 UserDto.builder()
@@ -48,7 +49,6 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
         String refreshToken = tokenService.createRefreshToken();
 
         jwtStoreService.setRefreshToken(email, refreshToken, refreshTokenPeriodInSec);
-        log.info("실행이 안되나??");
 
         makeResponse(response, accessToken, refreshToken);
     }
