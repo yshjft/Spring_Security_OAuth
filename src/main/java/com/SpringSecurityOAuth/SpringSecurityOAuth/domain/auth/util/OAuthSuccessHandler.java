@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -69,8 +70,6 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
         // 쿠키
         // 배포시 secure 설정
         ResponseCookie responseCookie = RefreshTokenResponseCookie.of(refreshTokenKey, refreshToken, true, false, refreshTokenPeriodInSec);
-        log.info("Set-Cookie = {}", responseCookie.toString());
         response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
-        log.info("??? = {}", response.getHeader(HttpHeaders.SET_COOKIE));
     }
 }

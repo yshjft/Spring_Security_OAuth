@@ -42,7 +42,7 @@ public class AuthController {
     public ResponseEntity<ResponseDto> signOut() {
         authService.signOut();
 
-        ResponseCookie responseCookie = RefreshTokenResponseCookie.of(refreshTokenKey,null, true, false, 0);
+        ResponseCookie responseCookie = RefreshTokenResponseCookie.of(refreshTokenKey, null, true, false, 0);
 
         ResponseDto responseDto = ResponseDto.builder()
                 .status(HttpStatus.OK.value())
