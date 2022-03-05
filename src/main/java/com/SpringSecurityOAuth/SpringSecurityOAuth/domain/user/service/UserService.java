@@ -48,7 +48,6 @@ public class UserService {
             memoRepository.bulkDeleteByUser(user.getId());
             userRepository.deleteUserById(user.getId());
         }catch (UserNotFoundException e) {
-
         } finally {
             Long expirationMs = tokenService.getExpirationInMS(accessToken);
             tokenStoreService.setBlackList(accessToken, expirationMs);
