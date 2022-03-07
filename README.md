@@ -29,11 +29,11 @@
       * RESPONSE BODY
       ```
       {
-        "status": 200,
-        "message": "login success",
-        "result": {
-           "accessToken": "~~~~"
-        }
+         "status": 200,
+         "message": "login success",
+         "result": {
+            "accessToken": "~~~~"
+         }
       }
       ```
 
@@ -48,11 +48,11 @@
       * RESPONSE BODY
       ```
       {
-        "status": 200,
-        "message": "token refreshed",
-        "result": {
-           "accessToken": "~~~"
-         }
+         "status": 200,
+         "message": "token refreshed",
+         "result": {
+            "accessToken": "~~~"
+          }
       }
       ```
 
@@ -61,8 +61,8 @@
       * RESPONSE BODY
       ```
       {
-        "status": 200,
-        "message": "logout success"
+         "status": 200,
+         "message": "logout success"
       }
       ```
 
@@ -73,6 +73,18 @@
   Cookie : refreshToken = ~~~
   ```
   * 사용자 정보 조회, [GET] /api/users/info    
+    * RESPONSE BODY
+    ```
+    {
+       "status": 200,
+       "message": "get user info success",
+       "result": {
+          "name": "~~~~",
+          "email": "~~~~~",
+          "profile_image": "~~~~~~"
+       }
+    }
+    ```
   * 사용자 탈퇴, [DELETE] /api/users/info
 
   
@@ -83,10 +95,83 @@
   Cookie : refreshToken = ~~~
   ```
   * memo 작성, [POST] /api/memos
+    * REQUEST BODY
+    ```
+    {
+       "memo":"메모를 작성해 봅시다!!"
+    }
+    ```
+    * RESPONSE BODY
+    ```
+    {
+       "status": 201,
+       "message": "write memo successfully",
+       "result": {
+           "id": 18
+        }
+    }
+    ```
   * memo 전체 조회, [GET] /api/memos?page={page}&perPage={perPage}
+    * RESPONSE BODY
+    ```
+    {
+       "status": 200,
+       "message": "get memos successfully",
+       "result": {
+           "metaData": {
+               "page": 0,
+               "totalPage": 1,
+               "perPage": 5,
+               "total": 1
+           },
+           "memos": [
+               {
+                   "id": 18,
+                   "memo": "메모를 작성해 봅시다!!",
+                   "createdAt": "2022-03-07T13:58:22.080074",
+                   "updatedAt": "2022-03-07T13:58:22.080074"
+               }
+           ]
+       }
+    }
+    ```
+    
   * memo 개별 조회, [GET] /api/memos/{memoId}
+    * RESPONSE BODY
+    ```
+    {
+       "status": 200,
+       "message": "get memo(id:18) successfully.",
+       "result": {
+           "id": 18,
+           "memo": "메모를 작성해 봅시다!!",
+           "createdAt": "2022-03-07T13:58:22.080074",
+           "updatedAt": "2022-03-07T13:58:22.080074"
+       }
+    }
+    ```
   * memo 수정, [PUT] /api/memos/{memoId}
+    * RESPONSE BODY
+    ```
+    {
+       "status": 200,
+       "message": "update memo(id:18) successfully.",
+       "result": {
+           "id": 18
+       }
+    }
+    ```
   * memo 삭제, [DELETE] /api/memos/{memoId}
+    * RESPONSE BODY
+    ```
+    {
+       "status": 200,
+       "message": "delete memo(id:18) successfully.",
+       "result": {
+           "id": 18
+       }
+    }  
+    ```
 
 
 * ERROR
