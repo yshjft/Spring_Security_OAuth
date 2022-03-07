@@ -86,7 +86,13 @@
     }
     ```
   * 사용자 탈퇴, [DELETE] /api/users/info
-
+    * RESPONSE BODY
+    ```
+    {
+       "status": 200,
+       "message": "delete user successfully. bye."
+    }
+    ```
   
 * memo
   * 공통 REQUEST HEADER 
