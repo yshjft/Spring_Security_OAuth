@@ -19,29 +19,69 @@
 
 ## API
 * auth    
-  * Google Login, [GET] /oauth2/authorization/google  
-    * REQUEST   
-    * RESPONSE
-
+  * Google Login, [GET] /oauth2/authorization/google
   * Kakao Login, [GET] /oauth2/authorization/kakao
-    * REQUEST
-    * RESPONSE
+    * RESPONSE   
+      * RESPONSE HEADER
+      ```
+      Set-Cookie: refreshToken = ~~~~
+      ```
+      * RESPONSE BODY
+      ```
+      {
+        "status": 200,
+        "message": "login success",
+        "result": {
+           "accessToken": "~~~~"
+        }
+      }
+      ```
 
   * refresh access token, [GET] /api/auth/token/refresh
     * REQUEST
+      * REQUEST HEADER
+      ```
+      Authorization : Bearer ~~~
+      Cookie : refreshToken = ~~~
+      ```
     * RESPONSE
+      * RESPONSE BODY
+      ```
+      {
+        "status": 200,
+        "message": "token refreshed",
+        "result": {
+           "accessToken": "~~~"
+         }
+      }
+      ```
 
   * logout, [GET]  /api/auth/sign-out
-    * REQUEST
     * RESPONSE
-
+      * RESPONSE BODY
+      ```
+      {
+        "status": 200,
+        "message": "logout success"
+      }
+      ```
 
 * user
+  * 공통 REQUEST HEADER
+  ```
+  Authorization : Bearer ~~~
+  Cookie : refreshToken = ~~~
+  ```
   * 사용자 정보 조회, [GET] /api/users/info    
   * 사용자 탈퇴, [DELETE] /api/users/info
 
   
 * memo
+  * 공통 REQUEST HEADER 
+  ```
+  Authorization : Bearer ~~~
+  Cookie : refreshToken = ~~~
+  ```
   * memo 작성, [POST] /api/memos
   * memo 전체 조회, [GET] /api/memos?page={page}&perPage={perPage}
   * memo 개별 조회, [GET] /api/memos/{memoId}
