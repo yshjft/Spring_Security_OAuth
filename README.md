@@ -19,25 +19,85 @@
 
 ## API
 * auth    
-  Google Login, [GET] /oauth2/authorization/google  
-   * REQUEST   
-   * RESPONSE
-  
-  Kakao Login, [GET] /oauth2/authorization/kakao
-   * REQUEST
-   * RESPONSE
+  * Google Login, [GET] /oauth2/authorization/google  
+    * REQUEST   
+    * RESPONSE
 
-  refresh access token, [GET] /api/auth/token/refresh
-   * REQUEST
-   * RESPONSE
+  * Kakao Login, [GET] /oauth2/authorization/kakao
+    * REQUEST
+    * RESPONSE
 
-  logout, [GET]  /api/auth/sign-out
-   * REQUEST
-   * RESPONSE
-  
+  * refresh access token, [GET] /api/auth/token/refresh
+    * REQUEST
+    * RESPONSE
+
+  * logout, [GET]  /api/auth/sign-out
+    * REQUEST
+    * RESPONSE
+
+
 * user
+  * 사용자 정보 조회, [GET] /api/users/info    
+  * 사용자 탈퇴, [DELETE] /api/users/info
+
+  
 * memo
-* ERROR 
+  * memo 작성, [POST] /api/memos
+  * memo 전체 조회, [GET] /api/memos?page={page}&perPage={perPage}
+  * memo 개별 조회, [GET] /api/memos/{memoId}
+  * memo 수정, [PUT] /api/memos/{memoId}
+  * memo 삭제, [DELETE] /api/memos/{memoId}
+
+
+* ERROR
+  * RESPONSE  
+    * E40001   
+      * 잘못된 입력이 있는 경우 발생하는 에러입니다.   
+      * MethodArgumentNotValidException.class(equestBody), org.springframework.validation.BindException.class(ModelAttribute)
+    * E40101, E40102, E40103, E40104, E40105
+      * 인증과 관련해 발생하는 에러입니다.
+
+       | ERROR CODE    |                         DESCRIPTION                         |
+       |:-----------------------------------------------------------:|:------------:|
+       | E40101  |   인증하지 않은 상태에서 접근하는 경우, UnAuthorizedAccessException.class   |
+       | E40102 |      access token이 만료된 경우, ExpiredTokenException.class      |
+       | E40103  | access token이 잘못된 경우(다시 로그인 해야함), WrongTokenException.class |  
+       | E40104  |  refresh token이 잘못된 경우(다시 로그인 해야함), InvalidRefreshTokenException.class  |
+  
+    * E40301   
+      * 권한이 없는 정보에 접근하는 경우 발생하는 엘러입니다.  
+      * MemoAccessDeniedException.class
+
+    * E40401, E40402
+
+      | ERROR CODE      |                 DESCRIPTION                  |   
+      |:--------------------------------------------:|:------------------:|   
+      | E40401 | 사용자를 찾을 수 없는 경우, UserNotFoundException.class |   
+      | E40402 |    메모를 찾을 수 없는 경우, MemoNotFoundException.class    |   
+    
+    * ERROR RESPONSE FORMAT
+      ```
+      {
+        "status": "",
+        "code": "",
+        "message": "", 
+        "errors": [
+          {
+            "field":"",
+            "value":"",
+            "reason":"",
+          },
+          ...
+        ]
+      }
+      ```
+      * status: 상태 코드
+      * code: 에러 코드
+      * message: 에러 메시지
+      * errors: 에러가 발생한 입력값(없는 경우 비어있는 배열 반환)
+        * field: 구체적인 위치
+        * value: 입력값
+        * reason: 발생한 이유
 
 
 
